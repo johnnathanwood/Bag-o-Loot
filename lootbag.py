@@ -37,10 +37,39 @@ def addChild(child):
         '''
         INSERT INTO Child
         Values(?,?,?)
-        ''', (None, child["name"], child["receiving"])
+        ''', (None, child["Name"], child["receiving"])
       )
     except sqlite3.OperationalError as err:
       print("oops", err)
+
+def checkChild(child):
+  with sqlite3.connect(lootbagdb) as conn:
+      cursor = conn.cursor()
+      try:
+        print(child)
+        cursor.execute(f'''SELECT *
+                         FROM child
+                         Where child.Name = '{child}'
+                         ''')
+        child_check = cursor.fetchone()
+        print("test",child_check)
+        if child_check == None:
+          cursor.execute(
+            '''
+            Insert Into Child
+              Values(?, ?, ?)
+            ''', (None, child ,1)
+          )
+          cursor.execute(f'''SELECT *
+                         FROM child 
+                         Where child.Name = '{child}'
+                         ''')
+          child_check = cursor.fetchone()
+          print(child_check)
+          return child_check
+      except sqlite3.OperationalError as err:
+        print("Child already exist", err)
+        print()
 
 def addGift(gift):
     with sqlite3.connect(lootbagdb) as conn:
@@ -51,10 +80,13 @@ def addGift(gift):
                 INSERT INTO Gift
                 values(?,?,?,?)
                 ''',
-                (None, gift["name"], gift["delivered"], gift["childId"])
+                (None, gift["Name"], gift["delivered"], gift["childId"])
             )
         except sqlite3.OperationalError as err:
             print("oops", err)
+
+# def removeGift(gift):
+#     wit
 
 
 
@@ -110,13 +142,10 @@ def addGift(gift):
 
 # Must be able to set the delivered property of a child's toys -- which defaults to false-- to true.
 if __name__ == '__main__':
-    addChild({
-        "name":"John",
-        "receiving": 1,
-    })
+    checkChild("Sam")
 
-    addGift({
-        'name': "football",
-        'delivered': 0,
-        'childId': 4,
-    })
+    # addGift({
+    #     'Name': "dildo",
+    #     'delivered': 0,
+    #     'childId': 11,
+    # })
