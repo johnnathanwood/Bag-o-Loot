@@ -28,6 +28,10 @@ def handleInputs():
         print(taco)
         addGift(taco[0], first)
 
+    if method == "REMOVE":
+        toy = checkGift(second, taco[0])
+        removeGift(toy)
+
 
 def getChildren():
   print("here it is")
