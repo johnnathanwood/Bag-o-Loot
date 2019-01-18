@@ -4,7 +4,19 @@ import sys
 
 lootbagdb = '/Users/John/pythoncourse/exercises/bag/lootbag.db'
 
+
+def handleInputs():
+
+    if len(sys.argv) == 2:
+        method = sys.argv[1].upper()
+
+    if method == "LS":
+        if len(sys.argv) == 2:
+            getChildren()
+
+    
 def getChildren():
+  print("here it is")
   # The connect() function opens a connection to an SQLite database. It returns a Connection object that represents the database.
   with sqlite3.connect(lootbagdb) as conn:
     cursor = conn.cursor()
@@ -71,6 +83,8 @@ def checkChild(child):
         print("Child already exist", err)
         print()
 
+
+
 def addGift(gift):
     with sqlite3.connect(lootbagdb) as conn:
         cursor = conn.cursor()
@@ -85,7 +99,27 @@ def addGift(gift):
         except sqlite3.OperationalError as err:
             print("oops", err)
 
+def checkGift(name, childId):
+  with sqlite3.connect(lootbagdb) as conn:
+      cursor = conn.cursor()
+      try:
+        cursor.execute(f'''SELECT *
+                          FROM gift
+                          Join child
+                          On child.childId = gift.childId
+                          Where gift.Name = "{name}"
+                          And child.childId = {childId}
+                         ''')
+        gift_check = cursor.fetchone()
+        return gift_check
+      except sqlite3.OperationalError as err:
+        print("error", err)
+        print()
+        temp = "None"
+        return temp
+
 def removeGift(gift):
+    print(gift)
     giftId = gift
     with sqlite3.connect(lootbagdb) as conn:
       cursor = conn.cursor()
@@ -93,7 +127,7 @@ def removeGift(gift):
         cursor.execute(f'''DELETE from gift
                           Where gift.giftId = {giftId}
                         ''')
-        print(f"Successfully removed {gift.Name}")
+        print(f"{gift} has been removed")
         print()
       except ValueError as err:
         print(f"Delete Error: {err}")
@@ -158,5 +192,4 @@ def removeGift(gift):
 
 # Must be able to set the delivered property of a child's toys -- which defaults to false-- to true.
 if __name__ == '__main__':
-    checkChild("Sam")
-    removeGift(4)
+    handleInputs()
