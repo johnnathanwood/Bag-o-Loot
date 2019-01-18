@@ -10,11 +10,25 @@ def handleInputs():
     if len(sys.argv) == 2:
         method = sys.argv[1].upper()
 
+    elif len(sys.argv) == 3:
+        method = sys.argv[1].upper()
+        first = sys.argv[2].title()
+
+    elif len(sys.argv) == 4:
+        method = sys.argv[1].upper()
+        first = sys.argv[2].title()
+        second = sys.argv[3].title()
+
     if method == "LS":
         if len(sys.argv) == 2:
             getChildren()
-
     
+    if method == "ADD":
+        taco = checkChild(second)
+        print(taco)
+        addGift(taco[0], first)
+
+
 def getChildren():
   print("here it is")
   # The connect() function opens a connection to an SQLite database. It returns a Connection object that represents the database.
@@ -79,13 +93,14 @@ def checkChild(child):
           child_check = cursor.fetchone()
           print(child_check)
           return child_check
+        return child_check
       except sqlite3.OperationalError as err:
         print("Child already exist", err)
         print()
 
 
 
-def addGift(gift):
+def addGift(childId, gift):
     with sqlite3.connect(lootbagdb) as conn:
         cursor = conn.cursor()
         try:
@@ -94,7 +109,7 @@ def addGift(gift):
                 INSERT INTO Gift
                 values(?,?,?,?)
                 ''',
-                (None, gift["Name"], gift["delivered"], gift["childId"])
+                (None, gift, 0, childId)
             )
         except sqlite3.OperationalError as err:
             print("oops", err)
