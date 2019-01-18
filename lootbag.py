@@ -85,6 +85,22 @@ def addGift(gift):
         except sqlite3.OperationalError as err:
             print("oops", err)
 
+def removeGift(gift):
+    giftId = gift
+    with sqlite3.connect(lootbagdb) as conn:
+      cursor = conn.cursor()
+      try:
+        cursor.execute(f'''DELETE from gift
+                          Where gift.giftId = {giftId}
+                        ''')
+        print(f"Successfully removed {gift.Name}")
+        print()
+      except ValueError as err:
+        print(f"Delete Error: {err}")
+        print()
+
+
+
 # def removeGift(gift):
 #     wit
 
@@ -143,9 +159,4 @@ def addGift(gift):
 # Must be able to set the delivered property of a child's toys -- which defaults to false-- to true.
 if __name__ == '__main__':
     checkChild("Sam")
-
-    # addGift({
-    #     'Name': "dildo",
-    #     'delivered': 0,
-    #     'childId': 11,
-    # })
+    removeGift(4)
