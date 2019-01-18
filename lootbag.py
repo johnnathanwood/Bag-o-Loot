@@ -1,5 +1,78 @@
+import sqlite3
+
+import sys
+
+lootbagdb = '/Users/John/pythoncourse/exercises/bag/lootbag.db'
+
+def getChildren():
+  # The connect() function opens a connection to an SQLite database. It returns a Connection object that represents the database.
+  with sqlite3.connect(lootbagdb) as conn:
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM child')
+    children = cursor.fetchall()
+    print(children)  
+
+
+def getChild(child):
+  with sqlite3.connect(lootbagdb) as conn:
+    cursor = conn.cursor()
+
+    cursor.execute(f'''SELECT  * FROM Child 
+                      JOIN Gift 
+                      ON Child.ChildId = Gift.giftId
+                      WHERE Child.Name = '{child}'
+                    ''')
+    child = cursor.fetchone()
+    print(child)
+    return child
+
+def addChild(child):
+  with sqlite3.connect(lootbagdb) as conn:
+    cursor = conn.cursor()
+
+    try:
+      # Have to use a specific syntax for inserts and updates, to keep baddies from using injection attacks
+      cursor.execute(
+        '''
+        INSERT INTO Child
+        Values(?,?,?)
+        ''', (None, child["name"], child["receiving"])
+      )
+    except sqlite3.OperationalError as err:
+      print("oops", err)
+
+def addGift(gift):
+    with sqlite3.connect(lootbagdb) as conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                '''
+                INSERT INTO Gift
+                values(?,?,?,?)
+                ''',
+                (None, gift["name"], gift["delivered"], gift["childId"])
+            )
+        except sqlite3.OperationalError as err:
+            print("oops", err)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Add a toy to the bag o' loot, and label it with the child's name who will receive it. The first argument must be the word add. The second argument is the gift to be delivered. The third argument is the name of the child.
- 
+
   
 
 # Remove a toy from the bag o' loot in case a child's status changes before delivery starts.
@@ -36,3 +109,14 @@
 
 
 # Must be able to set the delivered property of a child's toys -- which defaults to false-- to true.
+if __name__ == '__main__':
+    addChild({
+        "name":"John",
+        "receiving": 1,
+    })
+
+    addGift({
+        'name': "football",
+        'delivered': 0,
+        'childId': 4,
+    })
